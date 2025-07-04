@@ -2,6 +2,7 @@ import "dotenv/config";
 import IMAP from "node-imap";
 import YNAB from "./lib/ynab.js";
 import { historicalSearch, watchInbox } from "./lib/mail.js";
+import { logger } from "./lib/logger.js";
 
 const INBOX_NAME = process.env.IMAP_INBOX_NAME || "INBOX";
 
@@ -30,7 +31,7 @@ const requiredEnvVars = [
 
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
-    console.error(`❌ Missing required environment variable: ${envVar}`);
+    logger.error(`Missing required environment variable: ${envVar}`);
     process.exit(1);
   }
 }
@@ -43,14 +44,14 @@ const gracefulShutdown = (signal) => {
   if (isShuttingDown) return;
   isShuttingDown = true;
 
-  console.log(`\n🛑 Received ${signal}. Shutting down gracefully...`);
+  logger.info(`Received ${signal}. Shutting down gracefully...`);
 
   if (backgroundInterval) {
     clearInterval(backgroundInterval);
   }
 
   setTimeout(() => {
-    console.log("✅ Shutdown complete");
+    logger.info("Shutdown complete");
     process.exit(0);
   }, 1000);
 };
@@ -60,7 +61,7 @@ process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 (async () => {
   try {
-    console.log("🚀 Starting Amazon YNAB Sync...");
+    logger.info("Starting Amazon YNAB Sync...");
 
     const ynab = new YNAB();
     await ynab.init();
@@ -77,18 +78,18 @@ process.on("SIGINT", () => gracefulShutdown("SIGINT"));
     });
 
     imap.once("ready", () => {
-      console.log("✅ Connected to mail server. Opening mailbox...");
+      logger.info("Connected to mail server. Opening mailbox...");
 
       imap.openBox(INBOX_NAME, true, async (err, box) => {
         if (err) {
-          console.error("❌ Failed to open mailbox:", err.message);
+          logger.error("Failed to open mailbox:", err.message);
           process.exit(1);
         }
 
         try {
           await historicalSearch(imap, ynab, box);
 
-          console.log("📬 Listening to mailbox for new emails...");
+          logger.info("Listening to mailbox for new emails...");
           watchInbox(imap, ynab, box);
 
           // Background sync every minute
@@ -98,36 +99,36 @@ process.on("SIGINT", () => gracefulShutdown("SIGINT"));
             try {
               await ynab.fetchTransactions();
             } catch (e) {
-              console.error("🔁 Background sync failed:", e.message);
+              logger.error("Background sync failed:", e.message);
             }
           }, 60000);
 
-          console.log("✅ Amazon YNAB Sync is running. Press Ctrl+C to stop.");
+          logger.info("Amazon YNAB Sync is running. Press Ctrl+C to stop.");
         } catch (error) {
-          console.error("❌ Error during initialization:", error.message);
+          logger.error("Error during initialization:", error.message);
           process.exit(1);
         }
       });
     });
 
     imap.once("error", (err) => {
-      console.error("❌ IMAP error:", err.message);
+      logger.error("IMAP error:", err.message);
       if (!isShuttingDown) {
         process.exit(1);
       }
     });
 
     imap.once("end", () => {
-      console.warn("📴 IMAP connection ended");
+      logger.warn("IMAP connection ended");
       if (!isShuttingDown) {
         process.exit(1);
       }
     });
 
-    console.log("🔌 Connecting to mail server...");
+    logger.info("Connecting to mail server...");
     imap.connect();
   } catch (error) {
-    console.error("❌ Fatal error during startup:", error.message);
+    logger.error("Fatal error during startup:", error.message);
     process.exit(1);
   }
 })();
