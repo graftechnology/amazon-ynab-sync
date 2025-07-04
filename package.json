@@ -1,0 +1,48 @@
+{
+  "name": "amazon-ynab-sync",
+  "version": "1.0.0",
+  "description": "Modernized stateless email scanner for Amazon order confirmations that syncs with YNAB - built upon GraysonCAdams' original concept",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "amazon",
+    "ynab",
+    "email",
+    "imap",
+    "sync",
+    "transactions",
+    "budget",
+    "automation",
+    "docker"
+  ],
+  "author": "Graf Technology, LLC",
+  "contributors": [
+    {
+      "name": "GraysonCAdams",
+      "role": "Original concept and inspiration"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/graftechnology/amazon-ynab-sync.git"
+  },
+  "bugs": {
+    "url": "https://github.com/graftechnology/amazon-ynab-sync/issues"
+  },
+  "homepage": "https://github.com/graftechnology/amazon-ynab-sync",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.0",
+    "dotenv": "^16.6.1",
+    "node-imap": "^0.9.6",
+    "quoted-printable": "^1.0.1",
+    "ynab": "^2.9.0"
+  }
+}

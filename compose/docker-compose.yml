@@ -1,0 +1,18 @@
+services:
+  amazon-ynab-sync:
+    image: ghcr.io/graftechnology/amazon-ynab-sync:latest
+    container_name: amazon-ynab-sync
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      IMAP_USERNAME: "your-email@gmail.com"
+      IMAP_PASSWORD: "your-app-password"
+      IMAP_INCOMING_HOST: "imap.gmail.com"
+      IMAP_INCOMING_PORT: 993
+      IMAP_TLS: "true"
+      IMAP_INBOX_NAME: "[Gmail]/All Mail"
+      HISTORICAL_SEARCH_NUM_EMAILS: 500
+      YNAB_TOKEN: "your-ynab-token"
+      YNAB_BUDGET_ID: "your-ynab-budget-id"
+      YNAB_ACCEPTABLE_DATE_DIFFERENCE: 6
+      YNAB_ACCEPTABLE_DOLLAR_DIFFERENCE: 0.5
