@@ -26,7 +26,7 @@ This version is designed for reliability and ease of deployment, particularly in
 
 ### Prerequisites
 
-- Node.js (v14 or higher) and npm/yarn (if running directly)
+- Node.js (v22 or higher) and npm/yarn (if running directly)
 - Docker and Docker Compose (recommended for deployment)
 - Access to your email account via IMAP
 - A YNAB Personal Access Token (PAT)
@@ -70,7 +70,7 @@ This version is designed for reliability and ease of deployment, particularly in
     docker run --env-file .env amazon-ynab-sync
     ```
 
-### Running with Docker Compose
+### Running with Docker Compose (Recommended for Production)
 
 Using Docker Compose is the easiest way to manage the application as a service.
 
@@ -79,12 +79,38 @@ Using Docker Compose is the easiest way to manage the application as a service.
     git clone https://github.com/graftechnology/amazon-ynab-sync.git
     cd amazon-ynab-sync
     ```
-2.  Create a `.env` file in the project root with your configuration (see Environment Variables section).
-3.  Start the service using the provided [`docker-compose.yml`](compose/docker-compose.yml):
+2.  Copy the environment template and configure it:
     ```bash
+    cp .env.example .env
+    # Edit .env with your actual credentials
+    ```
+3.  Start the service using the provided [`docker-compose.yml`](compose/docker-compose.yml):
+
+    ```bash
+    cd compose
     docker-compose up -d
     ```
+
     The `-d` flag runs the container in detached mode.
+
+4.  Monitor the logs:
+
+    ```bash
+    docker-compose logs -f amazon-ynab-sync
+    ```
+
+5.  Stop the service:
+    ```bash
+    docker-compose down
+    ```
+
+### Using Pre-built Image from GitHub Container Registry
+
+The application is automatically built and published to GitHub Container Registry. You can use the pre-built image:
+
+```bash
+docker run --env-file .env ghcr.io/graftechnology/amazon-ynab-sync:latest
+```
 
 ## Configuration Guide
 

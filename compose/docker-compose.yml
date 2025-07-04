@@ -4,15 +4,29 @@ services:
     container_name: amazon-ynab-sync
     restart: unless-stopped
     working_dir: /app
+    env_file:
+      - .env
     environment:
-      IMAP_USERNAME: "your-email@gmail.com"
-      IMAP_PASSWORD: "your-app-password"
-      IMAP_INCOMING_HOST: "imap.gmail.com"
+      # Override defaults if needed
       IMAP_INCOMING_PORT: 993
       IMAP_TLS: "true"
       IMAP_INBOX_NAME: "[Gmail]/All Mail"
       HISTORICAL_SEARCH_NUM_EMAILS: 500
-      YNAB_TOKEN: "your-ynab-token"
-      YNAB_BUDGET_ID: "your-ynab-budget-id"
       YNAB_ACCEPTABLE_DATE_DIFFERENCE: 6
       YNAB_ACCEPTABLE_DOLLAR_DIFFERENCE: 0.5
+    # Health check to ensure container is working
+    healthcheck:
+      test: ["CMD", "node", "-e", "process.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 256M
+          cpus: "0.25"

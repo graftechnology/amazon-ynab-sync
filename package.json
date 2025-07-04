@@ -5,8 +5,14 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "node --inspect index.js",
+    "docker:build": "docker build -t amazon-ynab-sync .",
+    "docker:run": "docker run --env-file .env amazon-ynab-sync",
+    "compose:up": "cd compose && docker-compose up -d",
+    "compose:down": "cd compose && docker-compose down",
+    "compose:logs": "cd compose && docker-compose logs -f",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "amazon",
